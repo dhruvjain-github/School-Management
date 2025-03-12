@@ -3,17 +3,26 @@ const School = require("../models/schoolModel");
 
 async function addSchool(req, res) {
     const { name, address, latitude, longitude } = req.body;
+    
     if (!name || !address || !latitude || !longitude) {
-        return res.status(400).json({ error: "All fields are required." })
+        return res.status(400).json({ error: "All fields are required." });
     }
 
     try {
-        await School.addSchool(name, address, latitude, longitude)
-        res.status(201).json({ message: "School added successfully!" })
+        const existingSchool = await School.findByName(name);
+        if (existingSchool) {
+            return res.status(400).json({ error: "School already exists." });
+        }
+
+        await School.addSchool(name, address, latitude, longitude);
+        res.status(201).json({ message: "School added successfully!" });
+        
     } catch (error) {
-        res.status(500).json({ error: "Database error: " + error.message })
+        res.status(500).json({ error: "Database error: " + error.message });
     }
+    
 }
+
 
 async function listSchools(req, res) {
     const { lat, lng } = req.query;
