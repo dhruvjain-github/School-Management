@@ -29,4 +29,5 @@ exec("npx prisma migrate deploy", (err, stdout, stderr) => {
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
   });
+  
 });

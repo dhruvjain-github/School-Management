@@ -1,4 +1,4 @@
-const db = require("../config/db")
+const db = require("../config/db");
 
 async function addSchool(name, address, latitude, longitude) {
     const query = `INSERT INTO schools (name, address, latitude, longitude) VALUES (?, ?, ?, ?)`;
@@ -7,9 +7,8 @@ async function addSchool(name, address, latitude, longitude) {
 
 async function getSchools(userLat, userLng) {
     const query = `SELECT id, name, address, latitude, longitude FROM schools`;
-    const [schools] = await db.query(query)
+    const [schools] = await db.query(query);
 
-    
     schools.forEach((school) => {
         const R = 6371; 
         const dLat = (school.latitude - userLat) * (Math.PI / 180);
@@ -24,9 +23,15 @@ async function getSchools(userLat, userLng) {
         school.distance = R * c; 
     });
 
-
-    schools.sort((a, b) => a.distance - b.distance)
+    schools.sort((a, b) => a.distance - b.distance);
     return schools;
 }
 
-module.exports = { addSchool, getSchools }
+async function findByName(name) {
+    const query = `SELECT * FROM schools WHERE name = ? LIMIT 1`;
+    const [result] = await db.query(query, [name]);
+
+    return result.length > 0 ? result[0] : null; 
+}
+
+module.exports = { addSchool, getSchools, findByName };
